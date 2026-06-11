@@ -1,0 +1,63 @@
+@import 'tailwindcss';
+
+/* ===== 现代极简禅意 主题令牌(后续 UI 升级可在此切换) ===== */
+@theme {
+  --color-paper: #f4f1ea;      /* 米白纸底 */
+  --color-paper-deep: #ebe6da; /* 深一档纸色 */
+  --color-ink: #2b2826;        /* 墨色 */
+  --color-ink-soft: #6b645c;   /* 淡墨 */
+  --color-cinnabar: #9e3b2e;   /* 朱砂(印章/吉凶) */
+  --color-cinnabar-soft: #b9614f;
+  --color-gold: #b08d57;       /* 暗金点缀 */
+
+  --font-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif SC', serif;
+
+  --ease-zen: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-serif);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+/* 竖排文本(签诗等) */
+.vertical-rl {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+
+/* 细微纸纹 */
+.paper-grain {
+  background-color: var(--color-paper);
+  background-image: radial-gradient(rgba(43, 40, 38, 0.025) 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+
+/* 朱砂印章 */
+.seal {
+  font-family: var(--font-serif);
+  color: var(--color-paper);
+  background: var(--color-cinnabar);
+  border-radius: 4px;
+  letter-spacing: 0.1em;
+}
+
+@keyframes float-up {
+  0% { transform: translateY(8px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}

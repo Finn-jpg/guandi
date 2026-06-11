@@ -1,0 +1,9 @@
+node_modules
+dist
+dist-ssr
+*.local
+*.tsbuildinfo
+.vercel
+.DS_Store
+.claude
+UI交互demo
