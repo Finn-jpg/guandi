@@ -1,9 +1,10 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import type { Sign, Stage } from './types'
 import signs from './data/guandi.json'
 import { drawSign } from './hooks/useDivination'
 import { requestMotionPermission } from './hooks/useShake'
+import { trackVisit, recordDraw } from './lib/visitor'
 import Welcome from './components/Welcome'
 import JiaoToss from './components/JiaoToss'
 import DrawSign from './components/DrawSign'
@@ -16,6 +17,11 @@ export default function App() {
   const [stage, setStage] = useState<Stage>('welcome')
   const [motionOk, setMotionOk] = useState(false)
   const [current, setCurrent] = useState<Sign | null>(null)
+
+  // 上报访客(IP/地理位置),失败静默
+  useEffect(() => {
+    void trackVisit()
+  }, [])
 
   // 入口"开始":在用户手势中请求摇一摇授权(iOS 必需)
   const handleStart = useCallback(async () => {
@@ -61,7 +67,10 @@ export default function App() {
             motionOk={motionOk}
             title={`第${current.no}签 ${current.ganzhi}`}
             subtitle="掷筊确认，此签是否为神佛钦定"
-            onApproved={() => setStage('result')}
+            onApproved={() => {
+              void recordDraw(current)
+              setStage('result')
+            }}
             onRejected={() => setStage('draw')}
           />
         )}
