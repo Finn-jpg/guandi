@@ -87,11 +87,13 @@ export default function JiaoToss({ motionOk, title, subtitle, onApproved, onReje
             <div className="mt-7">
               {result === 'sheng' ? (
                 <ActionButton onClick={onApproved}>继 续</ActionButton>
-              ) : onRejected ? (
+              ) : result === 'yin' && onRejected ? (
+                // 阴筊·确认阶段:神明不应许此签,放回签筒重抽
                 <ActionButton variant="ghost" onClick={onRejected}>
                   签条放回 · 重新抽签
                 </ActionButton>
               ) : (
+                // 笑筊(圣意未明)及请示阶段的阴筊:诚心原地再掷
                 <ActionButton variant="ghost" onClick={toss}>
                   再 掷 一 次
                 </ActionButton>
