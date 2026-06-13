@@ -63,11 +63,24 @@ export default function SignResult({ sign, onClose }: { sign: Sign; onClose: () 
         </h2>
       </div>
 
-      {/* 签诗 · 竖排 */}
-      <div className="my-10 flex justify-center">
-        <div className="vertical-rl max-h-72 text-2xl leading-[2.2] tracking-[0.3em] text-[var(--color-ink)]">
-          {sign.poem}
-        </div>
+      {/* 签诗 · 竖排:按句拆列,右起,字符等距对齐成网格 */}
+      <div className="my-10 flex flex-row-reverse items-start justify-center gap-6">
+        {sign.poem
+          .split(/[，,；;。.、！!？?\s]+/)
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line, i) => (
+            <div key={i} className="flex flex-col items-center gap-3">
+              {[...line].map((ch, j) => (
+                <span
+                  key={j}
+                  className="text-2xl leading-none text-[var(--color-ink)]"
+                >
+                  {ch}
+                </span>
+              ))}
+            </div>
+          ))}
       </div>
 
       {/* 解签分区 */}
