@@ -3,8 +3,8 @@ import { motion } from 'framer-motion'
 import type { Sign } from '../types'
 import { Stage, ActionButton } from './ui'
 
-// 组装分享内容:带上刚求得的签,personalized 文案更利于裂变传播
-function buildShare(sign: Sign | null) {
+// 组装分享文案:带上刚求得的签 + 应用链接,personalized 更利于裂变传播
+function buildShareText(sign: Sign | null) {
   const url = window.location.origin + window.location.pathname
   const lines = ['关帝灵签 · 求签解签']
   if (sign) {
@@ -13,7 +13,34 @@ function buildShare(sign: Sign | null) {
     if (firstVerse) lines.push(firstVerse)
   }
   lines.push('诚则有应,你也来求一签 🙏')
-  return { title: '关帝灵签', text: lines.join('\n'), url }
+  lines.push(url)
+  return lines.join('\n')
+}
+
+// 健壮复制:优先剪贴板 API,降级到老式 execCommand(兼容部分微信/小红书 webview)
+async function copyText(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text)
+      return true
+    }
+  } catch {
+    // 落到兜底方案
+  }
+  try {
+    const ta = document.createElement('textarea')
+    ta.value = text
+    ta.style.position = 'fixed'
+    ta.style.opacity = '0'
+    document.body.appendChild(ta)
+    ta.focus()
+    ta.select()
+    const ok = document.execCommand('copy')
+    document.body.removeChild(ta)
+    return ok
+  } catch {
+    return false
+  }
 }
 
 export default function Closing({
@@ -25,25 +52,11 @@ export default function Closing({
 }) {
   const [copied, setCopied] = useState(false)
 
+  // 复制个性化文案+链接,提示用户粘贴给好友(微信/小红书等裂变主流方式)
   async function handleShare() {
-    const data = buildShare(sign)
-    // 移动端优先:系统原生分享面板,可一键转发到微信/小红书/微博等
-    if (navigator.share) {
-      try {
-        await navigator.share(data)
-      } catch {
-        // 用户取消分享,静默
-      }
-      return
-    }
-    // 桌面或不支持的浏览器:复制链接兜底
-    try {
-      await navigator.clipboard.writeText(`${data.text}\n${data.url}`)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 2200)
-    } catch {
-      // 静默
-    }
+    await copyText(buildShareText(sign))
+    setCopied(true)
+    window.setTimeout(() => setCopied(false), 2600)
   }
 
   return (
@@ -70,14 +83,14 @@ export default function Closing({
         </ActionButton>
       </div>
 
-      {/* 复制成功提示(仅复制兜底分支出现) */}
+      {/* 复制成功提示 */}
       {copied && (
         <motion.p
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-6 text-xs tracking-widest text-[var(--color-ink-soft)]/80"
+          className="mt-6 text-xs tracking-widest text-[var(--color-cinnabar)]"
         >
-          链接已复制，去分享给好友吧
+          链接已复制，粘贴分享给好友
         </motion.p>
       )}
     </Stage>
