@@ -79,7 +79,9 @@ export default function App() {
           <SignResult key="result" sign={current} onClose={() => setStage('closing')} />
         )}
 
-        {stage === 'closing' && <Closing key="closing" onAgain={reset} />}
+        {stage === 'closing' && (
+          <Closing key="closing" sign={current} onAgain={reset} />
+        )}
       </AnimatePresence>
     </main>
   )
