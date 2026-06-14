@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useShake } from '../hooks/useShake'
 import { Stage, ActionButton } from './ui'
+import { track, useShow, type Trigger } from '../lib/track'
 
 interface Props {
   motionOk: boolean
@@ -11,14 +12,18 @@ interface Props {
 export default function DrawSign({ motionOk, onDrawn }: Props) {
   const [drawing, setDrawing] = useState(false)
 
-  function draw() {
+  // 抽签按钮曝光
+  useShow('draw', { stage: 'draw' })
+
+  function draw(trigger: Trigger) {
     if (drawing) return
+    track('draw', 'click', { stage: 'draw', trigger })
     setDrawing(true)
     // 签条弹出动画后进入掷筊确认
     window.setTimeout(onDrawn, 1100)
   }
 
-  useShake({ enabled: motionOk && !drawing, onShake: draw })
+  useShake({ enabled: motionOk && !drawing, onShake: () => draw('shake') })
 
   return (
     <Stage className="justify-center text-center">
@@ -61,7 +66,7 @@ export default function DrawSign({ motionOk, onDrawn }: Props) {
       </div>
 
       <div className="mt-12">
-        <ActionButton onClick={draw} disabled={drawing}>
+        <ActionButton onClick={() => draw('click')} disabled={drawing}>
           {drawing ? '抽 签 中…' : '抽 签'}
         </ActionButton>
         {motionOk && !drawing && (

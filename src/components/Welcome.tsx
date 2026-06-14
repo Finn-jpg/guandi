@@ -1,7 +1,10 @@
 import { motion } from 'framer-motion'
 import { Stage, ActionButton } from './ui'
+import { track, useShow } from '../lib/track'
 
 export default function Welcome({ onStart }: { onStart: () => void }) {
+  // 上香起卦曝光:分配新 session,后续埋点都带这个公参
+  useShow('welcome_start', { stage: 'welcome', newSession: true })
   return (
     <Stage className="justify-center text-center">
       <motion.div
@@ -31,7 +34,14 @@ export default function Welcome({ onStart }: { onStart: () => void }) {
         transition={{ delay: 0.6, duration: 0.6 }}
         className="mt-16"
       >
-        <ActionButton onClick={onStart}>上 香 起 卦</ActionButton>
+        <ActionButton
+          onClick={() => {
+            track('welcome_start', 'click', { stage: 'welcome', trigger: 'click' })
+            onStart()
+          }}
+        >
+          上 香 起 卦
+        </ActionButton>
       </motion.div>
     </Stage>
   )

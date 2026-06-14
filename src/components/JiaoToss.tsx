@@ -1,14 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import type { CupFace, JiaoResult } from '../types'
 import { tossJiao, JIAO_LABEL, JIAO_HINT } from '../hooks/useDivination'
 import { useShake } from '../hooks/useShake'
 import { Stage, ActionButton } from './ui'
+import { track, useShow, type EventName, type Trigger } from '../lib/track'
 
 interface Props {
   motionOk: boolean
   title: string
   subtitle: string
+  eventKey: 'ask' | 'confirm' // 埋点前缀:区分请示/确认两处掷茭
+  signNo?: number             // 确认阶段带上当前签号
   onApproved: () => void
   onRejected?: () => void // 提供则 笑/阴筊 时回到抽签;否则原地再掷
 }
@@ -38,13 +41,38 @@ function Cup({ face, spinning }: { face: CupFace; spinning: boolean }) {
   )
 }
 
-export default function JiaoToss({ motionOk, title, subtitle, onApproved, onRejected }: Props) {
+export default function JiaoToss({
+  motionOk,
+  title,
+  subtitle,
+  eventKey,
+  signNo,
+  onApproved,
+  onRejected,
+}: Props) {
   const [cups, setCups] = useState<[CupFace, CupFace]>(['yang', 'yin'])
   const [result, setResult] = useState<JiaoResult | null>(null)
   const [phase, setPhase] = useState<'idle' | 'tossing' | 'done'>('idle')
 
-  function toss() {
+  const tossEvent = `${eventKey}_toss` as EventName
+  const continueEvent = `${eventKey}_continue` as EventName
+
+  // 掷茭按钮曝光(本界面 mount 即可见)
+  useShow(tossEvent, { stage: eventKey, signNo })
+
+  // 圣筊后"继续"按钮出现 → 曝光一次
+  const continueShown = useRef(false)
+  useEffect(() => {
+    if (result === 'sheng' && !continueShown.current) {
+      continueShown.current = true
+      track(continueEvent, 'show', { stage: eventKey, signNo })
+    }
+  }, [result, continueEvent, eventKey, signNo])
+
+  // trigger 有值才记点击:掷筊按钮='click'、摇一摇='shake';"再掷一次"不传→不记
+  function toss(trigger?: Trigger) {
     if (phase === 'tossing') return
+    if (trigger) track(tossEvent, 'click', { stage: eventKey, trigger, signNo })
     setPhase('tossing')
     setResult(null)
     const { cups: c, result: r } = tossJiao()
@@ -55,7 +83,7 @@ export default function JiaoToss({ motionOk, title, subtitle, onApproved, onReje
     }, 1050)
   }
 
-  useShake({ enabled: motionOk && phase !== 'tossing', onShake: toss })
+  useShake({ enabled: motionOk && phase !== 'tossing', onShake: () => toss('shake') })
 
   const spinning = phase === 'tossing'
 
@@ -86,15 +114,22 @@ export default function JiaoToss({ motionOk, title, subtitle, onApproved, onReje
 
             <div className="mt-7">
               {result === 'sheng' ? (
-                <ActionButton onClick={onApproved}>继 续</ActionButton>
+                <ActionButton
+                  onClick={() => {
+                    track(continueEvent, 'click', { stage: eventKey, trigger: 'click', signNo })
+                    onApproved()
+                  }}
+                >
+                  继 续
+                </ActionButton>
               ) : result === 'yin' && onRejected ? (
                 // 阴筊·确认阶段:神明不应许此签,放回签筒重抽
                 <ActionButton variant="ghost" onClick={onRejected}>
                   签条放回 · 重新抽签
                 </ActionButton>
               ) : (
-                // 笑筊(圣意未明)及请示阶段的阴筊:诚心原地再掷
-                <ActionButton variant="ghost" onClick={toss}>
+                // 笑筊(圣意未明)及请示阶段的阴筊:诚心原地再掷(不埋点)
+                <ActionButton variant="ghost" onClick={() => toss()}>
                   再 掷 一 次
                 </ActionButton>
               )}
@@ -103,7 +138,7 @@ export default function JiaoToss({ motionOk, title, subtitle, onApproved, onReje
         )}
 
         {phase !== 'done' && (
-          <ActionButton onClick={toss} disabled={spinning}>
+          <ActionButton onClick={() => toss('click')} disabled={spinning}>
             {spinning ? '掷 筊 中…' : '掷 筊'}
           </ActionButton>
         )}

@@ -8,3 +8,5 @@ dist-ssr
 .claude
 UI交互demo
 tutorial.md
+supabase/migrations/002_events.sql
+supabase/migrations/003_analytics.sql

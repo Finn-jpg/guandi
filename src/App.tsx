@@ -51,6 +51,7 @@ export default function App() {
           <JiaoToss
             key="ask"
             motionOk={motionOk}
+            eventKey="ask"
             title="请示帝爷公"
             subtitle="掷筊请示，可否为你抽签"
             onApproved={() => setStage('draw')}
@@ -65,6 +66,8 @@ export default function App() {
           <JiaoToss
             key="confirm"
             motionOk={motionOk}
+            eventKey="confirm"
+            signNo={current.no}
             title={`第${current.no}签 ${current.ganzhi}`}
             subtitle="掷筊确认，此签是否为神佛钦定"
             onApproved={() => {

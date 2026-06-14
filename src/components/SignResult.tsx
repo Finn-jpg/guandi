@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Sign } from '../types'
 import { ActionButton, Seal } from './ui'
+import { track, useShow } from '../lib/track'
 
 function Section({
   label,
@@ -44,6 +45,8 @@ function Section({
 }
 
 export default function SignResult({ sign, onClose }: { sign: Sign; onClose: () => void }) {
+  // 叩谢帝爷公按钮曝光(随签文页一同出现)
+  useShow('result_thanks', { stage: 'result', signNo: sign.no })
   return (
     <motion.section
       initial={{ opacity: 0, y: 16 }}
@@ -96,7 +99,14 @@ export default function SignResult({ sign, onClose }: { sign: Sign; onClose: () 
       </div>
 
       <div className="mt-12 flex justify-center">
-        <ActionButton onClick={onClose}>叩 谢 帝 爷 公</ActionButton>
+        <ActionButton
+          onClick={() => {
+            track('result_thanks', 'click', { stage: 'result', trigger: 'click', signNo: sign.no })
+            onClose()
+          }}
+        >
+          叩 谢 帝 爷 公
+        </ActionButton>
       </div>
     </motion.section>
   )
