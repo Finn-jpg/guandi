@@ -2,6 +2,21 @@
 
 本项目版本遵循语义化版本(主.次.补丁)。1.0 之前处于快速迭代期,次版本号随功能递增。
 
+## [0.5.0] - 2026-06-16
+
+### 新增
+
+- AI 智能解签:结果页「问神明·AI 解签」→ 选 12 类问事门类(去诉讼)→ 引导式问答(首问 chips 必答 + 选填补充)→ 流式个性化解读
+- `api/interpret`:Edge 流式函数,OpenAI 兼容(默认智谱 GLM),provider 由环境变量 `AI_BASE_URL/AI_API_KEY/AI_MODEL` 决定
+- 系统提示边界铁律(禁医疗/投资/法律断言等)+ 页面免责声明
+- `ai_interpretations` 表 + 服务端每日封顶(与求签共用 3 次,防刷接口)
+- 埋点新增 `ai_interpret`
+
+### 部署需先做
+
+- 跑 `supabase/migrations/004_ai_interpret.sql`
+- Vercel 配环境变量 `AI_API_KEY`(智谱 key);可选 `AI_BASE_URL`、`AI_MODEL`
+
 ## [0.4.0] - 2026-06-16
 
 ### 新增

@@ -16,6 +16,7 @@ export type EventName =
   | 'share'
   | 'again'
   | 'limit_reached'
+  | 'ai_interpret'
 
 export type EventType = 'show' | 'click'
 export type Trigger = 'click' | 'shake'
