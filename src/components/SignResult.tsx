@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import type { Sign } from '../types'
 import { ActionButton, Seal } from './ui'
 import { track, useShow } from '../lib/track'
+import AiInterpret from './AiInterpret'
 
 function Section({
   label,
@@ -92,6 +93,9 @@ export default function SignResult({ sign, onClose }: { sign: Sign; onClose: () 
         <Section label="碧 仙 注" text={sign.bixian} />
         <Section label="相 关 故 事" text={sign.story} />
       </div>
+
+      {/* AI 智能解签 */}
+      <AiInterpret sign={sign} />
 
       <div className="mt-12 flex justify-center">
         <ActionButton
