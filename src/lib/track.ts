@@ -4,6 +4,7 @@ import { supabase } from './supabase'
 import { getVisitorId } from './visitor'
 
 // 9 个按钮的事件名(两个"继续"、两个"掷茭"用 ask_/confirm_ 前缀区分)
+// 外加 limit_reached:命中每日上限的曝光(量化"想多求"的需求)
 export type EventName =
   | 'welcome_start'
   | 'ask_toss'
@@ -14,6 +15,7 @@ export type EventName =
   | 'result_thanks'
   | 'share'
   | 'again'
+  | 'limit_reached'
 
 export type EventType = 'show' | 'click'
 export type Trigger = 'click' | 'shake'

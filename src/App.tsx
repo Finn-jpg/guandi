@@ -5,6 +5,7 @@ import signs from './data/guandi.json'
 import { drawSign } from './hooks/useDivination'
 import { requestMotionPermission } from './hooks/useShake'
 import { trackVisit, recordDraw } from './lib/visitor'
+import { recordDrawLocal } from './lib/dailyLimit'
 import Welcome from './components/Welcome'
 import JiaoToss from './components/JiaoToss'
 import DrawSign from './components/DrawSign'
@@ -70,6 +71,7 @@ export default function App() {
             subtitle="掷筊确认，此签是否为神佛钦定"
             onApproved={() => {
               void recordDraw(current)
+              recordDrawLocal() // 完成一次求签:本地计数 +1(每日上限)
               setStage('result')
             }}
             onRejected={() => setStage('draw')}
