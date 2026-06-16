@@ -58,9 +58,7 @@ export default function App() {
           />
         )}
 
-        {stage === 'draw' && (
-          <DrawSign key="draw" motionOk={motionOk} onDrawn={handleDraw} />
-        )}
+        {stage === 'draw' && <DrawSign key="draw" motionOk={motionOk} onDrawn={handleDraw} />}
 
         {stage === 'confirm' && current && (
           <JiaoToss
@@ -82,9 +80,7 @@ export default function App() {
           <SignResult key="result" sign={current} onClose={() => setStage('closing')} />
         )}
 
-        {stage === 'closing' && (
-          <Closing key="closing" sign={current} onAgain={reset} />
-        )}
+        {stage === 'closing' && <Closing key="closing" sign={current} onAgain={reset} />}
       </AnimatePresence>
     </main>
   )

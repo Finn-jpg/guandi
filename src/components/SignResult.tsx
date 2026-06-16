@@ -61,9 +61,7 @@ export default function SignResult({ sign, onClose }: { sign: Sign; onClose: () 
           <Seal text={sign.fortune} />
           <span className="tracking-[0.2em]">{sign.ganzhi}</span>
         </div>
-        <h2 className="mt-3 text-3xl tracking-[0.2em] text-[var(--color-ink)]">
-          第{sign.no}签
-        </h2>
+        <h2 className="mt-3 text-3xl tracking-[0.2em] text-[var(--color-ink)]">第{sign.no}签</h2>
       </div>
 
       {/* 签诗 · 竖排:按句拆列,右起,字符等距对齐成网格 */}
@@ -75,10 +73,7 @@ export default function SignResult({ sign, onClose }: { sign: Sign; onClose: () 
           .map((line, i) => (
             <div key={i} className="flex flex-col items-center gap-3">
               {[...line].map((ch, j) => (
-                <span
-                  key={j}
-                  className="text-2xl leading-none text-[var(--color-ink)]"
-                >
+                <span key={j} className="text-2xl leading-none text-[var(--color-ink)]">
                   {ch}
                 </span>
               ))}

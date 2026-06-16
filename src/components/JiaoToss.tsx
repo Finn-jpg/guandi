@@ -11,7 +11,7 @@ interface Props {
   title: string
   subtitle: string
   eventKey: 'ask' | 'confirm' // 埋点前缀:区分请示/确认两处掷茭
-  signNo?: number             // 确认阶段带上当前签号
+  signNo?: number // 确认阶段带上当前签号
   onApproved: () => void
   onRejected?: () => void // 提供则 笑/阴筊 时回到抽签;否则原地再掷
 }
@@ -106,7 +106,9 @@ export default function JiaoToss({
           >
             <div
               className="text-3xl tracking-[0.3em]"
-              style={{ color: result === 'sheng' ? 'var(--color-cinnabar)' : 'var(--color-ink-soft)' }}
+              style={{
+                color: result === 'sheng' ? 'var(--color-cinnabar)' : 'var(--color-ink-soft)',
+              }}
             >
               {JIAO_LABEL[result]}
             </div>

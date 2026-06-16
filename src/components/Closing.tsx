@@ -44,13 +44,7 @@ async function copyText(text: string): Promise<boolean> {
   }
 }
 
-export default function Closing({
-  sign,
-  onAgain,
-}: {
-  sign: Sign | null
-  onAgain: () => void
-}) {
+export default function Closing({ sign, onAgain }: { sign: Sign | null; onAgain: () => void }) {
   const [copied, setCopied] = useState(false)
   const signNo = sign?.no
 
