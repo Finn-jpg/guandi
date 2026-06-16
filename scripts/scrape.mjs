@@ -47,10 +47,22 @@ async function fetchSign(no) {
     const joined = lines.join('')
 
     // 分区标记
-    if (joined.includes('现代白话文解签')) { section = 'modern'; return }
-    if (joined.includes('传统版解签')) { section = 'trad'; return }
-    if (joined.includes('占验')) { section = 'zhanyan'; return }
-    if (joined.includes('相关故事')) { section = 'story'; return }
+    if (joined.includes('现代白话文解签')) {
+      section = 'modern'
+      return
+    }
+    if (joined.includes('传统版解签')) {
+      section = 'trad'
+      return
+    }
+    if (joined.includes('占验')) {
+      section = 'zhanyan'
+      return
+    }
+    if (joined.includes('相关故事')) {
+      section = 'story'
+      return
+    }
 
     // 诗曰 → 签诗
     if (lines[0] === '诗曰') {

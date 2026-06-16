@@ -26,8 +26,8 @@ export function isMotionSupported(): boolean {
 
 interface UseShakeOptions {
   enabled: boolean
-  threshold?: number   // 加速度差值阈值
-  cooldownMs?: number  // 触发后的冷却,防抖
+  threshold?: number // 加速度差值阈值
+  cooldownMs?: number // 触发后的冷却,防抖
   onShake: () => void
 }
 
@@ -52,8 +52,7 @@ export function useShake({ enabled, threshold = 16, cooldownMs = 1200, onShake }
       }
       const dt = now - prev.t
       if (dt < 80) return
-      const delta =
-        Math.abs(acc.x - prev.x) + Math.abs(acc.y - prev.y) + Math.abs(acc.z - prev.z)
+      const delta = Math.abs(acc.x - prev.x) + Math.abs(acc.y - prev.y) + Math.abs(acc.z - prev.z)
       last.current = { x: acc.x, y: acc.y, z: acc.z, t: now }
       if (delta > threshold && now - lastFire.current > cooldownMs) {
         lastFire.current = now

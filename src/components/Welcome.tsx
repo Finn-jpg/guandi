@@ -43,6 +43,11 @@ export default function Welcome({ onStart }: { onStart: () => void }) {
           上 香 起 卦
         </ActionButton>
       </motion.div>
+
+      {/* 版本号:不打扰的角标,便于把线上行为对上发版 */}
+      <div className="absolute bottom-3 left-0 right-0 text-center text-[10px] tracking-widest text-[var(--color-ink-soft)]/40">
+        v{__APP_VERSION__}
+      </div>
     </Stage>
   )
 }

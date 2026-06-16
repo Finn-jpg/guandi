@@ -2,13 +2,13 @@
 
 /* ===== 现代极简禅意 主题令牌(后续 UI 升级可在此切换) ===== */
 @theme {
-  --color-paper: #f4f1ea;      /* 米白纸底 */
+  --color-paper: #f4f1ea; /* 米白纸底 */
   --color-paper-deep: #ebe6da; /* 深一档纸色 */
-  --color-ink: #2b2826;        /* 墨色 */
-  --color-ink-soft: #6b645c;   /* 淡墨 */
-  --color-cinnabar: #9e3b2e;   /* 朱砂(印章/吉凶) */
+  --color-ink: #2b2826; /* 墨色 */
+  --color-ink-soft: #6b645c; /* 淡墨 */
+  --color-cinnabar: #9e3b2e; /* 朱砂(印章/吉凶) */
   --color-cinnabar-soft: #b9614f;
-  --color-gold: #b08d57;       /* 暗金点缀 */
+  --color-gold: #b08d57; /* 暗金点缀 */
 
   --font-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif SC', serif;
 
@@ -58,6 +58,12 @@ body {
 }
 
 @keyframes float-up {
-  0% { transform: translateY(8px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+  0% {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
