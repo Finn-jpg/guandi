@@ -1,7 +1,7 @@
 import type { Sign } from '../types'
 
 // 把一支签渲染成一张极简水墨签文卡(PNG Blob),供用户保存到相册/转发。
-// 纯 Canvas 绘制,零依赖;尺寸固定 1080×1440,保证各机型都清晰。
+// 纯 Canvas 绘制,零依赖;窄高比例(840×1500≈0.56)贴近传统瘦长签纸,保证各机型清晰。
 
 const PAPER = '#f4f1ea'
 const INK = '#2b2826'
@@ -12,8 +12,8 @@ const GOLD = '#b08d57'
 const SERIF = '"Songti SC","STSong","SimSun","Noto Serif SC",serif'
 
 export async function renderSignCard(sign: Sign): Promise<Blob> {
-  const W = 1080
-  const H = 1440
+  const W = 840
+  const H = 1500
   const cx = W / 2
   const canvas = document.createElement('canvas')
   canvas.width = W
@@ -25,44 +25,43 @@ export async function renderSignCard(sign: Sign): Promise<Blob> {
   ctx.fillStyle = PAPER
   ctx.fillRect(0, 0, W, H)
 
-  // 双线内框:外墨细线 + 内朱砂更细线,克制的仪式感
+  // 双线内框:外墨细线 + 内朱砂更细线,克制的仪式感(收窄,贴近边)
   ctx.strokeStyle = withAlpha(INK, 0.18)
   ctx.lineWidth = 2
-  ctx.strokeRect(64, 64, W - 128, H - 128)
+  ctx.strokeRect(54, 54, W - 108, H - 108)
   ctx.strokeStyle = withAlpha(CINNABAR, 0.5)
   ctx.lineWidth = 1.5
-  ctx.strokeRect(82, 82, W - 164, H - 164)
+  ctx.strokeRect(70, 70, W - 140, H - 140)
 
   ctx.textAlign = 'center'
 
   // 签号
   ctx.fillStyle = INK
   ctx.textBaseline = 'middle'
-  ctx.font = `500 60px ${SERIF}`
-  ctx.fillText(`第 ${sign.no} 签`, cx, 208)
+  ctx.font = `500 56px ${SERIF}`
+  ctx.fillText(`第 ${sign.no} 签`, cx, 214)
 
   // 干支
   if (sign.ganzhi) {
     ctx.fillStyle = INK_SOFT
-    ctx.font = `400 34px ${SERIF}`
-    ctx.fillText(spaced(sign.ganzhi), cx, 280)
+    ctx.font = `400 32px ${SERIF}`
+    ctx.fillText(spaced(sign.ganzhi), cx, 286)
   }
 
   // 吉凶朱砂方印
   if (sign.fortune) {
-    ctx.font = `500 36px ${SERIF}`
+    ctx.font = `500 34px ${SERIF}`
     const tw = ctx.measureText(sign.fortune).width
-    const padX = 26
+    const padX = 24
     const sealW = tw + padX * 2
-    const sealH = 70
-    const sx = cx - sealW / 2
-    const sy = 348 - sealH / 2
+    const sealH = 66
+    const sealCY = 358
     ctx.fillStyle = CINNABAR
-    roundRect(ctx, sx, sy, sealW, sealH, 8)
+    roundRect(ctx, cx - sealW / 2, sealCY - sealH / 2, sealW, sealH, 8)
     ctx.fill()
     ctx.fillStyle = PAPER
     ctx.textBaseline = 'middle'
-    ctx.fillText(sign.fortune, cx, 348 + 2)
+    ctx.fillText(sign.fortune, cx, sealCY + 2)
   }
 
   // 签诗:按句拆列,右起,字符等距成网格(与签文页一致的排法)
@@ -72,17 +71,17 @@ export async function renderSignCard(sign: Sign): Promise<Blob> {
     .filter(Boolean)
 
   if (verses.length) {
-    const charStep = 82
-    const colStep = 104
+    const charStep = 88
+    const colStep = 126
     const nCols = verses.length
     const maxLen = Math.max(...verses.map((v) => [...v].length))
-    const bandCenterY = 820
+    const bandCenterY = 838
     const longestH = (maxLen - 1) * charStep
     const startY = bandCenterY - longestH / 2
     const rightX = cx + ((nCols - 1) * colStep) / 2
 
     ctx.fillStyle = INK
-    ctx.font = `500 56px ${SERIF}`
+    ctx.font = `500 58px ${SERIF}`
     ctx.textBaseline = 'middle'
     verses.forEach((verse, i) => {
       const x = rightX - i * colStep
@@ -96,17 +95,17 @@ export async function renderSignCard(sign: Sign): Promise<Blob> {
   ctx.strokeStyle = withAlpha(GOLD, 0.6)
   ctx.lineWidth = 1.5
   ctx.beginPath()
-  ctx.moveTo(cx - 60, 1300)
-  ctx.lineTo(cx + 60, 1300)
+  ctx.moveTo(cx - 56, 1320)
+  ctx.lineTo(cx + 56, 1320)
   ctx.stroke()
 
   ctx.fillStyle = INK_SOFT
   ctx.textBaseline = 'middle'
-  ctx.font = `400 30px ${SERIF}`
-  ctx.fillText('关 帝 灵 签', cx, 1346)
+  ctx.font = `400 28px ${SERIF}`
+  ctx.fillText('关 帝 灵 签', cx, 1366)
   ctx.fillStyle = withAlpha(INK, 0.4)
-  ctx.font = `400 24px ${SERIF}`
-  ctx.fillText('www.qianyuqifu.com', cx, 1390)
+  ctx.font = `400 22px ${SERIF}`
+  ctx.fillText('www.qianyuqifu.com', cx, 1408)
 
   return await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('生成图片失败'))), 'image/png')
