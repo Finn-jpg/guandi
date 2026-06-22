@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import type { Sign } from '../types'
 import { Stage, ActionButton } from './ui'
 import { track, useShow } from '../lib/track'
+import { renderSignCard } from '../lib/signCard'
 
 // 组装分享文案:带上刚求得的签 + 应用链接,personalized 更利于裂变传播
 function buildShareText(sign: Sign | null) {
@@ -46,10 +47,13 @@ async function copyText(text: string): Promise<boolean> {
 
 export default function Closing({ sign, onAgain }: { sign: Sign | null; onAgain: () => void }) {
   const [copied, setCopied] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [cardUrl, setCardUrl] = useState<string | null>(null)
   const signNo = sign?.no
 
-  // 结束页两个按钮曝光
+  // 结束页按钮曝光
   useShow('share', { stage: 'closing', signNo })
+  useShow('save_sign', { stage: 'closing', signNo })
   useShow('again', { stage: 'closing', signNo })
 
   // 复制个性化文案+链接,提示用户粘贴给好友(微信/小红书等裂变主流方式)
@@ -58,6 +62,38 @@ export default function Closing({ sign, onAgain }: { sign: Sign | null; onAgain:
     await copyText(buildShareText(sign))
     setCopied(true)
     window.setTimeout(() => setCopied(false), 2600)
+  }
+
+  // 生成签文卡片图:移动端走系统分享面板存图,不支持则内嵌预览长按保存
+  async function handleSave() {
+    if (!sign || saving) return
+    track('save_sign', 'click', { stage: 'closing', trigger: 'click', signNo })
+    setSaving(true)
+    let blob: Blob
+    try {
+      blob = await renderSignCard(sign)
+    } catch {
+      setSaving(false)
+      return
+    }
+    const file = new File([blob], `关帝灵签-第${sign.no}签.png`, { type: 'image/png' })
+    if (navigator.canShare?.({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file] })
+      } catch {
+        // 用户取消,静默
+      }
+      setSaving(false)
+      return
+    }
+    // 兜底:预览图,长按保存到相册(覆盖微信等不支持文件分享的 webview)
+    setCardUrl(URL.createObjectURL(blob))
+    setSaving(false)
+  }
+
+  function closePreview() {
+    if (cardUrl) URL.revokeObjectURL(cardUrl)
+    setCardUrl(null)
   }
 
   return (
@@ -79,6 +115,11 @@ export default function Closing({ sign, onAgain }: { sign: Sign | null; onAgain:
 
       <div className="mt-14 flex flex-col items-center gap-5">
         <ActionButton onClick={handleShare}>分 享 灵 签</ActionButton>
+        {sign && (
+          <ActionButton variant="ghost" onClick={handleSave} disabled={saving}>
+            {saving ? '生 成 中…' : '保 存 灵 签'}
+          </ActionButton>
+        )}
         <ActionButton
           variant="ghost"
           onClick={() => {
@@ -89,6 +130,38 @@ export default function Closing({ sign, onAgain }: { sign: Sign | null; onAgain:
           再 求 一 签
         </ActionButton>
       </div>
+
+      {/* 签文卡片预览:兜底保存方式,长按保存到相册 */}
+      {cardUrl && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 px-8"
+          onClick={closePreview}
+        >
+          <img
+            src={cardUrl}
+            alt="灵签卡片"
+            className="max-h-[68vh] w-auto rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <p className="mt-5 text-sm tracking-widest text-white/90">长按图片，保存到相册</p>
+          <div className="mt-4 flex gap-6" onClick={(e) => e.stopPropagation()}>
+            <a
+              href={cardUrl}
+              download={`关帝灵签-第${sign?.no}签.png`}
+              className="text-xs tracking-widest text-white/70 underline"
+            >
+              下载
+            </a>
+            <button
+              type="button"
+              onClick={closePreview}
+              className="text-xs tracking-widest text-white/70"
+            >
+              关闭
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 复制成功提示 */}
       {copied && (

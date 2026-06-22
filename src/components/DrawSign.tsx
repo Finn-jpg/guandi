@@ -32,24 +32,35 @@ export default function DrawSign({ motionOk, onDrawn }: Props) {
 
       {/* 签筒 + 弹出的签条 */}
       <div className="relative flex h-64 w-40 items-end justify-center">
-        {/* 弹出的签条 */}
+        {/* 抽出的竹签:扁平竹片,朱砂签头 + 签号,升起时微微倾斜 */}
         <motion.div
-          className="absolute bottom-28 z-10 h-40 w-3 rounded-full bg-[var(--color-gold)]"
-          initial={{ y: 60, opacity: 0 }}
-          animate={drawing ? { y: -70, opacity: 1 } : { y: 60, opacity: 0 }}
+          className="absolute bottom-28 z-10"
+          initial={{ y: 70, opacity: 0, rotate: 0 }}
+          animate={drawing ? { y: -84, opacity: 1, rotate: -6 } : { y: 70, opacity: 0, rotate: 0 }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div className="absolute -top-1 left-1/2 h-4 w-4 -translate-x-1/2 rounded-full bg-[var(--color-cinnabar)]" />
+          <div className="flex h-[150px] w-[18px] flex-col items-center rounded-t-[3px] bg-[var(--color-gold)]">
+            {/* 朱砂签头 */}
+            <div className="mt-[7px] flex h-[22px] w-[13px] items-center justify-center rounded-[2px] bg-[var(--color-cinnabar)]">
+              <span className="text-[9px] leading-none text-[var(--color-paper)]">签</span>
+            </div>
+            {/* 竹节纹 */}
+            <div className="mt-4 h-px w-3 bg-[var(--color-ink)]/15" />
+            <div className="mt-7 h-px w-3 bg-[var(--color-ink)]/15" />
+          </div>
         </motion.div>
 
-        {/* 筒内若干签条 */}
-        <div className="absolute bottom-24 z-0 flex gap-1">
+        {/* 筒内竹签:扁平竹片,高低错落 */}
+        <div className="absolute bottom-24 z-0 flex items-end gap-[3px]">
           {[...Array(7)].map((_, i) => (
             <div
               key={i}
-              className="w-1.5 rounded-full bg-[var(--color-gold)]/70"
-              style={{ height: `${56 + (i % 3) * 10}px` }}
-            />
+              className="w-3 rounded-t-[2px] bg-[var(--color-gold)]/80"
+              style={{ height: `${50 + (i % 3) * 11}px` }}
+            >
+              {/* 竹节纹 */}
+              <div className="mx-auto mt-1 h-px w-2 bg-[var(--color-ink)]/10" />
+            </div>
           ))}
         </div>
 

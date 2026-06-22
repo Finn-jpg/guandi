@@ -14,6 +14,7 @@ export type EventName =
   | 'confirm_continue'
   | 'result_thanks'
   | 'share'
+  | 'save_sign'
   | 'again'
   | 'limit_reached'
   | 'ai_interpret'

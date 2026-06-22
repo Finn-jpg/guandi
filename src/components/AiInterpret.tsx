@@ -104,7 +104,7 @@ export default function AiInterpret({ sign }: { sign: Sign }) {
             animate={{ opacity: 1 }}
             className="text-center"
           >
-            <ActionButton onClick={() => setPhase('topic')}>问 神 明 · AI 解 签</ActionButton>
+            <ActionButton onClick={() => setPhase('topic')}>AI 解 签</ActionButton>
             <p className="mt-4 text-xs tracking-widest text-[var(--color-ink-soft)]/60">
               说说你所求之事,得一段贴心解读
             </p>
@@ -197,7 +197,7 @@ export default function AiInterpret({ sign }: { sign: Sign }) {
 
             <div className="mt-8 flex flex-col items-center gap-3">
               <ActionButton onClick={generate} disabled={!requiredOk}>
-                请 神 明 解 签
+                解 此 签
               </ActionButton>
               <button
                 type="button"
